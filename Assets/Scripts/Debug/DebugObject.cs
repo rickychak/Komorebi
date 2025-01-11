@@ -1,16 +1,24 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
+using Vector3 = UnityEngine.Vector3;
 
 namespace Komorebi.Debug
 {
     public class DebugObject
     {
         private string _label;
-        private object _value;
+        private Func<object> _valueGetter;
 
-        public DebugObject(string label, object value)
+        // For reference types and structs that need to be monitored
+        public static DebugObject Create<T>(string label, Func<T> getter)
         {
-            this._label = label;
-            this._value = value;
+            return new DebugObject(label, () => getter());
+        }
+
+        private DebugObject(string label, Func<object> getter)
+        {
+            _label = label;
+            _valueGetter = getter;
         }
 
         public string RetrieveDebugObject()
@@ -18,7 +26,7 @@ namespace Komorebi.Debug
             StringBuilder builder = new StringBuilder();
             builder.Append(_label);
             builder.Append(": ");
-            builder.Append(_value);
+            builder.Append(_valueGetter());
             return builder.ToString();
         }
     }

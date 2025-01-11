@@ -11,7 +11,7 @@ public class CharacterControlManager : MonoBehaviour
     
     private Vector2 _moveDirection = Vector2.zero;
     
-    private bool _isGrounded = false;
+    private bool IsGrounded { get; set; }
     
     private const float _speed = 0.5f;
     private readonly Vector3 _gravity = new(0, -1f, 0);
@@ -19,19 +19,22 @@ public class CharacterControlManager : MonoBehaviour
     {
         _rigidbody = GetComponent<Rigidbody>();
         _mainCamera = Camera.main;
-        _debugDisplayManager = GameObject.FindGameObjectWithTag("EditorOnly").GetComponentInChildren<DebugDisplayManager>();
+        _debugDisplayManager = GameObject.FindGameObjectWithTag("EditorOnly").GetComponent<DebugDisplayManager>();
     }
 
     private void Start()
     {
-        _debugDisplayManager.AppendToDebugObjects(new DebugObject("isGrounded", _isGrounded));
-        _debugDisplayManager.AppendToDebugObjects(new DebugObject("mouse X", _moveDirection.x));
-        _debugDisplayManager.AppendToDebugObjects(new DebugObject("mouse y", _moveDirection.y));
-        _debugDisplayManager.AppendToDebugObjects(new DebugObject("movement X", _mainCamera.transform.right * _moveDirection.x));
-        _debugDisplayManager.AppendToDebugObjects(new DebugObject("movement Z", _mainCamera.transform.forward* _moveDirection.y));
-        _debugDisplayManager.AppendToDebugObjects(new DebugObject("velocity X", _rigidbody.linearVelocity.x));
-        _debugDisplayManager.AppendToDebugObjects(new DebugObject("velocity Y", _rigidbody.linearVelocity.y));
-        _debugDisplayManager.AppendToDebugObjects(new DebugObject("velocity Z", _rigidbody.linearVelocity.z));
+        _debugDisplayManager.AppendToDebugObjects(DebugObject.Create("IsGrounded", () => IsGrounded));
+        _debugDisplayManager.AppendToDebugObjects(DebugObject.Create(" mouse X", () => _moveDirection.x));
+        _debugDisplayManager.AppendToDebugObjects(DebugObject.Create(" mouse Y", () => _moveDirection.y));
+        // var moveDirectionX = _mainCamera.transform.right * _moveDirection.x;
+        // var moveDirectionY = _mainCamera.transform.forward* _moveDirection.y;
+        // _debugDisplayManager.AppendToDebugObjects(new DebugObject(" movement X", ref moveDirectionX));
+        // _debugDisplayManager.AppendToDebugObjects(new DebugObject(" movement Z", ref moveDirectionY));
+        // var rigidbodyLinearVelocity = _rigidbody.linearVelocity;
+        // _debugDisplayManager.AppendToDebugObjects(new DebugObject(" velocity X", ref rigidbodyLinearVelocity.x));
+        // _debugDisplayManager.AppendToDebugObjects(new DebugObject(" velocity Y", ref rigidbodyLinearVelocity.y));
+        // _debugDisplayManager.AppendToDebugObjects(new DebugObject(" velocity Z", ref rigidbodyLinearVelocity.z));
     }
 
     void GetUserInputOnMovement()
@@ -45,7 +48,7 @@ public class CharacterControlManager : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Ground"))
         {
-            _isGrounded = true;
+            IsGrounded = true;
         }
     }
 
@@ -53,14 +56,14 @@ public class CharacterControlManager : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Ground"))
         {
-            _isGrounded = false;
+            IsGrounded = false;
         }
     }
 
     void FixedUpdate()
     {
         
-        if (!_isGrounded) return;
+        if (!IsGrounded) return;
         GetUserInputOnMovement();
         Vector3 move = _mainCamera.transform.forward* _moveDirection.y + _mainCamera.transform.right * _moveDirection.x;
         move.y = 0;

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Text;
 using TMPro;
+using Unity.Jobs;
 using UnityEngine;
 
 namespace Komorebi.Debug
@@ -8,11 +9,15 @@ namespace Komorebi.Debug
     public class DebugDisplayManager: MonoBehaviour
     {
         private List<DebugObject> _debugObjects = new();
-        private TextMeshPro _textMesh;
+        private TextMeshProUGUI _textMesh;
 
         public void Awake()
         {
-            _textMesh = GetComponentInChildren<TextMeshPro>();
+            _textMesh = GetComponentInChildren<TextMeshProUGUI>();
+            if (_textMesh == null)
+            {
+                UnityEngine.Debug.Log("cannot find TextMeshPro");
+            }
         }
         
         public void AppendToDebugObjects(DebugObject debugObject)
