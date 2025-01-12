@@ -7,14 +7,16 @@ public class CharacterControlManager : MonoBehaviour
 {
     private Camera _mainCamera;
     private Rigidbody _rigidbody;
-    private DebugDisplayManager _debugDisplayManager;  
-    
-    private Vector2 _moveDirection = Vector2.zero;
-    
-    private bool IsGrounded { get; set; }
+    private DebugDisplayManager _debugDisplayManager;
+
+    private Vector3 _overPositiveSpeed;
+    private Vector3 _overNegativeSpeed;
+    private Vector3 _overSpeed;
     
     private const float _speed = 0.5f;
-    private readonly Vector3 _gravity = new(0, -1f, 0);
+    private const float _maxSpeed = 10f;
+    
+    private bool IsGrounded { get; set; }
     void Awake()
     {
         _rigidbody = GetComponent<Rigidbody>();
@@ -24,23 +26,28 @@ public class CharacterControlManager : MonoBehaviour
 
     private void Start()
     {
-        _debugDisplayManager.AppendToDebugObjects(DebugObject.Create("IsGrounded", () => IsGrounded));
-        _debugDisplayManager.AppendToDebugObjects(DebugObject.Create(" mouse X", () => _moveDirection.x));
-        _debugDisplayManager.AppendToDebugObjects(DebugObject.Create(" mouse Y", () => _moveDirection.y));
-        // var moveDirectionX = _mainCamera.transform.right * _moveDirection.x;
-        // var moveDirectionY = _mainCamera.transform.forward* _moveDirection.y;
-        // _debugDisplayManager.AppendToDebugObjects(new DebugObject(" movement X", ref moveDirectionX));
-        // _debugDisplayManager.AppendToDebugObjects(new DebugObject(" movement Z", ref moveDirectionY));
-        // var rigidbodyLinearVelocity = _rigidbody.linearVelocity;
-        // _debugDisplayManager.AppendToDebugObjects(new DebugObject(" velocity X", ref rigidbodyLinearVelocity.x));
-        // _debugDisplayManager.AppendToDebugObjects(new DebugObject(" velocity Y", ref rigidbodyLinearVelocity.y));
-        // _debugDisplayManager.AppendToDebugObjects(new DebugObject(" velocity Z", ref rigidbodyLinearVelocity.z));
+        _debugDisplayManager.AppendToDebugObjects(DebugObject.Create(" IsGrounded", () => IsGrounded));
+        _debugDisplayManager.AppendToDebugObjects(DebugObject.Create(" mouse X", () => Input.GetAxisRaw("Horizontal")));
+        _debugDisplayManager.AppendToDebugObjects(DebugObject.Create(" mouse Y", () => Input.GetAxisRaw("Vertical")));
+        _debugDisplayManager.AppendToDebugObjects(DebugObject.Create(" movement X", () => _mainCamera.transform.right*Input.GetAxisRaw("Horizontal")));
+        _debugDisplayManager.AppendToDebugObjects(DebugObject.Create(" movement Z", () => _mainCamera.transform.forward * Input.GetAxisRaw("Vertical")));
+        var velocity = _mainCamera.transform.forward* GetUserInputOnMovement().y + _mainCamera.transform.right * GetUserInputOnMovement().x;
+        _debugDisplayManager.AppendToDebugObjects(DebugObject.Create(" movement summary", () => "x: " + velocity.x + " y: " + velocity.y + " z: " + velocity.z));
+        _debugDisplayManager.AppendToDebugObjects(DebugObject.Create(" velocity X", () => _rigidbody.linearVelocity.x));
+        _debugDisplayManager.AppendToDebugObjects(DebugObject.Create(" velocity Y", () => _rigidbody.linearVelocity.y));
+        _debugDisplayManager.AppendToDebugObjects(DebugObject.Create(" velocity Z", () => _rigidbody.linearVelocity.z));
+        _debugDisplayManager.AppendToDebugObjects(DebugObject.Create(" brakeForce", () => " x: " + _overSpeed.x + " y: " + _overSpeed.y + " z: " + _overSpeed.z));
+        _debugDisplayManager.AppendToDebugObjects(DebugObject.Create(" brakeForce -ve", () => " x: " + _overNegativeSpeed.x + " y: " + _overNegativeSpeed.y + " z: " + _overNegativeSpeed.z));
+        _debugDisplayManager.AppendToDebugObjects(DebugObject.Create(" brakeForce +ve", () => " x: " + _overPositiveSpeed.x + " y: " + _overPositiveSpeed.y + " z: " + _overPositiveSpeed.z));
+
     }
 
-    void GetUserInputOnMovement()
+    private Vector2 GetUserInputOnMovement()
     {
-        _moveDirection.x = Math.Abs(_rigidbody.linearVelocity.x) < 2.5f? Input.GetAxisRaw("Horizontal"): 0;
-        _moveDirection.y = Math.Abs(_rigidbody.linearVelocity.z) < 2.5f? Input.GetAxisRaw("Vertical"): 0;
+        Vector2 moveDirection = Vector2.zero;
+        moveDirection.x = Input.GetAxisRaw("Horizontal");
+        moveDirection.y = Input.GetAxisRaw("Vertical");
+        return moveDirection;
     }
 
     // Update is called once per frame
@@ -60,14 +67,27 @@ public class CharacterControlManager : MonoBehaviour
         }
     }
 
-    void FixedUpdate()
+    private void AddForceOnInput(Vector2 axisInput)
     {
-        
-        if (!IsGrounded) return;
-        GetUserInputOnMovement();
-        Vector3 move = _mainCamera.transform.forward* _moveDirection.y + _mainCamera.transform.right * _moveDirection.x;
+        Vector3 move = _mainCamera.transform.forward* axisInput.y + _mainCamera.transform.right * axisInput.x;
         move.y = 0;
         _rigidbody.AddForce(move * _speed, ForceMode.VelocityChange);
+    }
+
+    private void AddBrakeForceOnLimit(float maxSpeed)
+    {
+        _overPositiveSpeed = new Vector3((_rigidbody.linearVelocity.x > 0 && _rigidbody.linearVelocity.x > maxSpeed)? maxSpeed - _rigidbody.linearVelocity.x: 0, (_rigidbody.linearVelocity.y > 0 && _rigidbody.linearVelocity.y > maxSpeed)? maxSpeed - _rigidbody.linearVelocity.y: 0, (_rigidbody.linearVelocity.z > 0 && _rigidbody.linearVelocity.z > maxSpeed)? maxSpeed - _rigidbody.linearVelocity.z: 0);
+        _overNegativeSpeed = new Vector3((_rigidbody.linearVelocity.x < 0 && _rigidbody.linearVelocity.x < -1 * maxSpeed)? -1 * maxSpeed - _rigidbody.linearVelocity.x: 0, (_rigidbody.linearVelocity.y < 0 && _rigidbody.linearVelocity.y < -1 * maxSpeed)? -1 * maxSpeed - _rigidbody.linearVelocity.y: 0, (_rigidbody.linearVelocity.z < 0 && _rigidbody.linearVelocity.z < -1 * maxSpeed)? -1 * maxSpeed - _rigidbody.linearVelocity.z: 0);
+        _overSpeed = _overPositiveSpeed + _overNegativeSpeed;
+        _rigidbody.AddForce( -1 * _overSpeed, ForceMode.VelocityChange);
+    }
+    
+
+    void FixedUpdate()
+    {
+        if (!IsGrounded) return;
+        AddForceOnInput(GetUserInputOnMovement());
+        AddBrakeForceOnLimit(_maxSpeed);
     }
     
     
