@@ -19,7 +19,17 @@ public class CharacterControlManager : MonoBehaviour
     {
         _rigidbody = GetComponent<Rigidbody>();
         _mainCamera = Camera.main;
-        _debugDisplayManager = GameObject.FindGameObjectWithTag("EditorOnly").GetComponent<DebugDisplayManager>();
+        _debugDisplayManager = DebugDisplayManager.Instance;
+
+        if (_rigidbody == null)
+        {
+            UnityEngine.Debug.LogError("Cannot find Rigidbody");
+        }
+        
+        if (_mainCamera == null)
+        {
+            UnityEngine.Debug.LogError("Cannot find Main Camera");
+        }
     }
 
     private void Start()

@@ -5,16 +5,43 @@ using UnityEngine;
 
 namespace Komorebi.Debug
 {
-    public class DebugDisplayManager: MonoBehaviour
+    public class DebugDisplayManager : MonoBehaviour
     {
         private Dictionary<string, DebugCategory> _debugCategories = new();
         private TextMeshProUGUI _textMesh;
         private CanvasGroup _canvasGroup;
 
-        public void Awake()
+        // Singleton instance
+        private static DebugDisplayManager _instance;
+        public static DebugDisplayManager Instance
         {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = FindObjectOfType<DebugDisplayManager>();
+                    if (_instance == null)
+                    {
+                        UnityEngine.Debug.LogError("No DebugDisplayManager found in scene!");
+                    }
+                }
+                return _instance;
+            }
+        }
+
+        private void Awake()
+        {
+            // Ensure only one instance exists
+            if (_instance != null && _instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            _instance = this;
+            
+            // Initialize components
             _textMesh = GetComponentInChildren<TextMeshProUGUI>();
-            _canvasGroup = GetComponentInChildren<CanvasGroup>();
+            _canvasGroup = GetComponent<CanvasGroup>();
             
             if (_textMesh == null)
             {
