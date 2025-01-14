@@ -21,13 +21,10 @@ public class CharacterControlManager : MonoBehaviour
         _mainCamera = Camera.main;
         _debugDisplayManager = DebugDisplayManager.Instance;
 
-        if (_rigidbody == null)
-        {
+        if (_rigidbody == null){
             UnityEngine.Debug.LogError("Cannot find Rigidbody");
         }
-        
-        if (_mainCamera == null)
-        {
+        if (_mainCamera == null){
             UnityEngine.Debug.LogError("Cannot find Main Camera");
         }
     }
@@ -35,8 +32,6 @@ public class CharacterControlManager : MonoBehaviour
     private void Start()
     {
         RegisterDebugInfo();
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
     }
 
     private void RegisterDebugInfo()

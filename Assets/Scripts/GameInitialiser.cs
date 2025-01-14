@@ -18,6 +18,12 @@ namespace Komorebi
             }
         }
 
+        private void Start()
+        {
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+
         private void Update()
         {
             if (Input.GetKeyDown(_debugToggleKey))
