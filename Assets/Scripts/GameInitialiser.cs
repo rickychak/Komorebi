@@ -7,11 +7,23 @@ namespace Komorebi
 {
     public class GameInitialiser : MonoBehaviour
     {
-        DebugDisplayManager _debugManager;
+        [SerializeField] private bool _enableDebugModeOnStart = false;
+        [SerializeField] private KeyCode _debugToggleKey = KeyCode.Tab;
 
         private void Awake()
         {
-            
+            if (_enableDebugModeOnStart)
+            {
+                DebugSettings.EnableDebugMode();
+            }
+        }
+
+        private void Update()
+        {
+            if (Input.GetKeyDown(_debugToggleKey))
+            {
+                DebugSettings.ToggleDebugMode();
+            }
         }
     }
 }

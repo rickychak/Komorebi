@@ -4424,6 +4424,7 @@ GameObject:
   - component: {fileID: 1187152378}
   - component: {fileID: 1187152377}
   - component: {fileID: 1187152376}
+  - component: {fileID: 1187152379}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -4514,6 +4515,18 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!225 &1187152379
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1187152374}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1231597808
 GameObject:
   m_ObjectHideFlags: 0
@@ -6732,7 +6745,7 @@ GameObject:
   - component: {fileID: 1772041533}
   - component: {fileID: 1772041534}
   m_Layer: 3
-  m_Name: Capsule
+  m_Name: User
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7006,6 +7019,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d42eed3ab8ea46ac92091f0341244da2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _enableDebugModeOnStart: 1
+  _debugToggleKey: 9
 --- !u!4 &1836675367
 Transform:
   m_ObjectHideFlags: 0
