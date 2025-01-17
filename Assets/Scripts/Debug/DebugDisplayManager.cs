@@ -19,7 +19,7 @@ namespace Komorebi.Debug
             {
                 if (_instance == null)
                 {
-                    _instance = FindObjectOfType<DebugDisplayManager>();
+                    _instance = FindFirstObjectByType<DebugDisplayManager>();
                     if (_instance == null)
                     {
                         UnityEngine.Debug.LogError("No DebugDisplayManager found in scene!");
