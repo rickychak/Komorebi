@@ -1,4 +1,6 @@
+using System;
 using Komorebi.Debug;
+using Komorebi.Product;
 using UnityEngine;
 
 public class CharacterControlManager : MonoBehaviour
@@ -6,6 +8,11 @@ public class CharacterControlManager : MonoBehaviour
     private Camera _mainCamera;
     private Rigidbody _rigidbody;
     private DebugDisplayManager _debugDisplayManager;
+    private CapsuleCollider _capsuleCollider;
+    
+    private IInteractable _currentInteractable;
+    private float _interactionCheckCooldown = 0.1f; // Adjust as needed
+    private float _nextInteractionCheck;
 
     private Vector3 _overPositiveSpeed;
     private Vector3 _overNegativeSpeed;
@@ -19,6 +26,7 @@ public class CharacterControlManager : MonoBehaviour
     {
         _rigidbody = GetComponent<Rigidbody>();
         _mainCamera = Camera.main;
+        _capsuleCollider = GetComponent<CapsuleCollider>();
         _debugDisplayManager = DebugDisplayManager.Instance;
 
         if (_rigidbody == null){
@@ -40,6 +48,7 @@ public class CharacterControlManager : MonoBehaviour
         inputCategory.AddDebugValue("IsGrounded", () => IsGrounded);
         inputCategory.AddDebugValue("Mouse X", () => Input.GetAxisRaw("Horizontal"));
         inputCategory.AddDebugValue("Mouse Y", () => Input.GetAxisRaw("Vertical"));
+        inputCategory.AddDebugValue("Interact Button - E", () => Input.GetKeyDown(KeyCode.E));
         
         var movementCategory = _debugDisplayManager.CreateCategory("Movement");
         movementCategory.AddDebugValue("Camera Right", () => _mainCamera.transform.right * Input.GetAxisRaw("Horizontal"));
@@ -54,6 +63,9 @@ public class CharacterControlManager : MonoBehaviour
         brakeCategory.AddDebugValue("Combined", () => FormatVector3(_overSpeed));
         brakeCategory.AddDebugValue("Negative", () => FormatVector3(_overNegativeSpeed));
         brakeCategory.AddDebugValue("Positive", () => FormatVector3(_overPositiveSpeed));
+        
+        var interactCategory = _debugDisplayManager.CreateCategory("Interact");
+        interactCategory.AddDebugValue("CurrentInteractItem", UpdateInteractableDetection);
     }
 
     private string FormatVector3(Vector3 vector)
@@ -75,6 +87,22 @@ public class CharacterControlManager : MonoBehaviour
         if (other.gameObject.CompareTag("Ground"))
         {
             IsGrounded = true;
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("InteractableItem"))
+        {
+            other.gameObject.GetComponent<IInteractable>().ShowPrompt();
+        }
+    }
+    
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.CompareTag("InteractableItem"))
+        {
+            other.gameObject.GetComponent<IInteractable>().ShowPrompt();
         }
     }
 
@@ -101,7 +129,21 @@ public class CharacterControlManager : MonoBehaviour
             _rigidbody.linearVelocity = _rigidbody.linearVelocity.normalized * maxSpeed;
         }
     }
-    
+
+    private void Update()
+    {
+        if (Time.time >= _nextInteractionCheck)
+        {
+            UpdateInteractableDetection();
+            _nextInteractionCheck = Time.time + _interactionCheckCooldown;
+        }
+        
+        // Only perform interaction when E is pressed
+        if (Input.GetKeyDown(KeyCode.E) && _currentInteractable != null)
+        {
+            _currentInteractable.Interact();
+        }
+    }
 
     void FixedUpdate()
     {
@@ -109,6 +151,36 @@ public class CharacterControlManager : MonoBehaviour
         AddForceOnInput(GetUserInputOnMovement());
         AddBrakeForceOnLimit(_maxSpeed);
     }
+
+    string UpdateInteractableDetection()
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward * (_capsuleCollider.radius * 2), out hit))
+        {
+            // First check if it's an interactable layer/tag
+            if (hit.collider.CompareTag("InteractableItem")) // Make sure to set this tag on interactable objects
+            {
+                // Only get component if we don't already have it cached
+                if (_currentInteractable == null || hit.collider.gameObject != _currentInteractable.GetGameObject())
+                {
+                    _currentInteractable = hit.collider.gameObject.GetComponent<IInteractable>();
+                    return _currentInteractable.GetGameObject().name;
+                }
+            }
+            else
+            {
+                _currentInteractable = null;
+                return "null";
+            }
+        }
+        else
+        {
+            _currentInteractable = null;
+            return "null";
+        }
+        return "null";
+    }
+    
     
     
     

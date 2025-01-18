@@ -41,7 +41,7 @@ namespace Komorebi.Debug
             
             // Initialize components
             _textMesh = GetComponentInChildren<TextMeshProUGUI>();
-            _canvasGroup = GetComponent<CanvasGroup>();
+            _canvasGroup = GetComponentInChildren<CanvasGroup>();
             
             if (_textMesh == null)
             {

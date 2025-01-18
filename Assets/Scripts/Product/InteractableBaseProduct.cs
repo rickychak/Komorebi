@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace Komorebi.Product
 {
     public class InteractableBaseProduct : IInteractable
@@ -14,12 +16,17 @@ namespace Komorebi.Product
             isActivated = !isActivated;
         }
 
-        public string ShowPrompt()
+        public void ShowPrompt()
         {
             throw new System.NotImplementedException();
         }
 
         public void Interact()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public GameObject GetGameObject()
         {
             throw new System.NotImplementedException();
         }
