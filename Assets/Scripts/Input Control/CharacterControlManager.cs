@@ -40,6 +40,8 @@ public class CharacterControlManager : MonoBehaviour
     private void Start()
     {
         RegisterDebugInfo();
+        _rigidbody.linearDamping = 0f;
+        _rigidbody.angularDamping = 0f;
     }
 
     private void RegisterDebugInfo()
@@ -65,7 +67,7 @@ public class CharacterControlManager : MonoBehaviour
         brakeCategory.AddDebugValue("Positive", () => FormatVector3(_overPositiveSpeed));
         
         var interactCategory = _debugDisplayManager.CreateCategory("Interact");
-        interactCategory.AddDebugValue("CurrentInteractItem", UpdateInteractableDetection);
+        interactCategory.AddDebugValue("CurrentInteractItem", RetrieveCurrentInteractableItem);
     }
 
     private string FormatVector3(Vector3 vector)
@@ -152,7 +154,18 @@ public class CharacterControlManager : MonoBehaviour
         AddBrakeForceOnLimit(_maxSpeed);
     }
 
-    string UpdateInteractableDetection()
+    private string RetrieveCurrentInteractableItem()
+    {
+        string currentInteractableItem = "null";
+        if (_currentInteractable != null)
+        {
+            currentInteractableItem = _currentInteractable.GetGameObject().gameObject.name;
+        }
+
+        return currentInteractableItem;
+    }
+
+    void UpdateInteractableDetection()
     {
         RaycastHit hit;
         if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward * (_capsuleCollider.radius * 2), out hit))
@@ -164,21 +177,17 @@ public class CharacterControlManager : MonoBehaviour
                 if (_currentInteractable == null || hit.collider.gameObject != _currentInteractable.GetGameObject())
                 {
                     _currentInteractable = hit.collider.gameObject.GetComponent<IInteractable>();
-                    return _currentInteractable.GetGameObject().name;
                 }
             }
             else
             {
                 _currentInteractable = null;
-                return "null";
             }
         }
         else
         {
             _currentInteractable = null;
-            return "null";
         }
-        return "null";
     }
     
     
