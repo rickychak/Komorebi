@@ -134,6 +134,7 @@ public class CharacterControlManager : MonoBehaviour
 
     private void Update()
     {
+        Debug.DrawRay(_mainCamera.transform.position, _mainCamera.transform.forward * (_capsuleCollider.radius * 5));
         if (Time.time >= _nextInteractionCheck)
         {
             UpdateInteractableDetection();
@@ -143,7 +144,8 @@ public class CharacterControlManager : MonoBehaviour
         // Only perform interaction when E is pressed
         if (Input.GetKeyDown(KeyCode.E) && _currentInteractable != null)
         {
-            _currentInteractable.Interact();
+            _currentInteractable.TriggerAnimation();
+            _currentInteractable.Toggle();
         }
     }
 
@@ -168,7 +170,7 @@ public class CharacterControlManager : MonoBehaviour
     void UpdateInteractableDetection()
     {
         RaycastHit hit;
-        if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward * (_capsuleCollider.radius * 2), out hit))
+        if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward * (_capsuleCollider.radius * 5), out hit))
         {
             // First check if it's an interactable layer/tag
             if (hit.collider.CompareTag("InteractableItem")) // Make sure to set this tag on interactable objects

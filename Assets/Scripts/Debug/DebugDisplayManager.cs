@@ -58,6 +58,11 @@ namespace Komorebi.Debug
         
         public DebugCategory CreateCategory(string categoryName)
         {
+            
+            if (_debugCategories.ContainsKey(categoryName))
+            {
+                return _debugCategories[categoryName];
+            }
             var category = new DebugCategory(categoryName);
             _debugCategories[categoryName] = category;
             return category;

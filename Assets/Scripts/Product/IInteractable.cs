@@ -4,9 +4,9 @@ namespace Komorebi.Product
 {
     public interface IInteractable
     {
-        public bool IsActivated();
+        public bool IsPromptShown { get; set; }
         public void Toggle();
-        public void Interact();
+        public void TriggerAnimation();
         public void ShowPrompt();
         GameObject GetGameObject();
     }
