@@ -1,31 +1,35 @@
 using System;
+// using Komorebi.GameFlow;
 using Komorebi.Debug;
 using Komorebi.Product;
+using Product;
 using UnityEngine;
 
 public class CharacterControlManager : MonoBehaviour
 {
+    private const float _speed = 0.5f;
+    private const float _maxSpeed = 10f;
+    
+    private float _interactionCheckCooldown = 0.1f; // Adjust as needed
+    private float _nextInteractionCheck;
+    
+    private IInteractable _currentInteractable;
     private Camera _mainCamera;
     private Rigidbody _rigidbody;
     private DebugDisplayManager _debugDisplayManager;
     private CapsuleCollider _capsuleCollider;
     
-    private IInteractable _currentInteractable;
-    private float _interactionCheckCooldown = 0.1f; // Adjust as needed
-    private float _nextInteractionCheck;
-
     private Vector3 _overPositiveSpeed;
     private Vector3 _overNegativeSpeed;
     private Vector3 _overSpeed;
     
-    private const float _speed = 0.5f;
-    private const float _maxSpeed = 10f;
+    
     
     private bool IsGrounded { get; set; }
     void Awake()
     {
-        _rigidbody = GetComponent<Rigidbody>();
         _mainCamera = Camera.main;
+        _rigidbody = GetComponent<Rigidbody>();
         _capsuleCollider = GetComponent<CapsuleCollider>();
         _debugDisplayManager = DebugDisplayManager.Instance;
 
