@@ -21,7 +21,7 @@ namespace Komorebi.Product
             IsToggled = !IsToggled;
         }
 
-        public void ShowPrompt()
+        public void ShowUI()
         {
             _ = IsPromptShown ? SpriteRenderer.DOFade(0, 0.5f) : SpriteRenderer.DOFade(1, 0.5f);
             IsPromptShown = !IsPromptShown;

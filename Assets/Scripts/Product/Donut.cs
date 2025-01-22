@@ -6,6 +6,9 @@ namespace Product
 {
     public class Donut: BaseProduct
     {
+        private float _progress { get; set; } = 0f;
+        
+
         protected override void Awake()
         {
             base.Awake();
@@ -14,7 +17,7 @@ namespace Product
         private void Start()
         {
             var foodCategory = DebugDisplayManager.Instance.CreateCategory("Product");
-            foodCategory.AddDebugValue(name+": ", () => IsPickedUp);
+            foodCategory.AddDebugValue(name +": ", () => IsPickedUp);
         }
     }
 }

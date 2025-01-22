@@ -7,7 +7,7 @@ namespace Komorebi.Product
         public bool IsPromptShown { get; set; }
         public void Toggle();
         public void TriggerAnimation();
-        public void ShowPrompt();
+        public void ShowUI();
         GameObject GetGameObject();
     }
 }

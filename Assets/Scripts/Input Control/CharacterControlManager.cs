@@ -18,10 +18,16 @@ public class CharacterControlManager : MonoBehaviour
     private Rigidbody _rigidbody;
     private DebugDisplayManager _debugDisplayManager;
     private CapsuleCollider _capsuleCollider;
+    private InventoryController _inventoryController;
     
     private Vector3 _overPositiveSpeed;
     private Vector3 _overNegativeSpeed;
     private Vector3 _overSpeed;
+    
+    private RaycastHit _hit;
+    
+    [SerializeField]
+    private LayerMask _layerMask;
     
     
     
@@ -32,6 +38,7 @@ public class CharacterControlManager : MonoBehaviour
         _rigidbody = GetComponent<Rigidbody>();
         _capsuleCollider = GetComponent<CapsuleCollider>();
         _debugDisplayManager = DebugDisplayManager.Instance;
+        _inventoryController = new InventoryController();
 
         if (_rigidbody == null){
             UnityEngine.Debug.LogError("Cannot find Rigidbody");
@@ -55,11 +62,13 @@ public class CharacterControlManager : MonoBehaviour
         inputCategory.AddDebugValue("Mouse X", () => Input.GetAxisRaw("Horizontal"));
         inputCategory.AddDebugValue("Mouse Y", () => Input.GetAxisRaw("Vertical"));
         inputCategory.AddDebugValue("Interact Button - E", () => Input.GetKeyDown(KeyCode.E));
+        inputCategory.AddDebugValue("Interact Button - Numpad", () => _inventoryController.CurrentSlot);
         
         var movementCategory = _debugDisplayManager.CreateCategory("Movement");
         movementCategory.AddDebugValue("Camera Right", () => _mainCamera.transform.right * Input.GetAxisRaw("Horizontal"));
         movementCategory.AddDebugValue("Camera Forward", () => _mainCamera.transform.forward * Input.GetAxisRaw("Vertical"));
-        
+        movementCategory.AddDebugValue("Raycast Hit", () => _hit.point);
+
         var velocityCategory = _debugDisplayManager.CreateCategory("Velocity");
         velocityCategory.AddDebugValue("Current", () => $"x: {_rigidbody.linearVelocity.x:F2} " +
                                                        $"y: {_rigidbody.linearVelocity.y:F2} " +
@@ -100,7 +109,7 @@ public class CharacterControlManager : MonoBehaviour
     {
         if (other.gameObject.CompareTag("InteractableItem"))
         {
-            other.gameObject.GetComponent<IInteractable>().ShowPrompt();
+            other.gameObject.GetComponent<IInteractable>().ShowUI();
         }
     }
     
@@ -108,7 +117,7 @@ public class CharacterControlManager : MonoBehaviour
     {
         if (other.gameObject.CompareTag("InteractableItem"))
         {
-            other.gameObject.GetComponent<IInteractable>().ShowPrompt();
+            other.gameObject.GetComponent<IInteractable>().ShowUI();
         }
     }
 
@@ -138,18 +147,64 @@ public class CharacterControlManager : MonoBehaviour
 
     private void Update()
     {
-        Debug.DrawRay(_mainCamera.transform.position, _mainCamera.transform.forward * (_capsuleCollider.radius * 5));
         if (Time.time >= _nextInteractionCheck)
         {
-            UpdateInteractableDetection();
+            UpdateCameraRaycastDetection();
             _nextInteractionCheck = Time.time + _interactionCheckCooldown;
         }
+
+        HandleNumpadInput();
+        HandleInputOnInteractables();
         
-        // Only perform interaction when E is pressed
+        
+        if (Input.GetKeyDown(KeyCode.Q) && _hit.collider.gameObject.layer == LayerMask.NameToLayer("Terrain"))
+        {
+            // _currentInteractable.TriggerAnimation();
+            var slotGameObject = _inventoryController.RemoveItemFromInventory();
+            if (slotGameObject)
+            {
+                slotGameObject.transform.position = _hit.point;
+            }
+
+        }
+    }
+
+    private void HandleNumpadInput()
+    {
+        if (Input.GetAxis("Mouse ScrollWheel") > 0)
+        {
+            if (_inventoryController.CurrentSlot == 4)
+            {
+                _inventoryController.CurrentSlot = 0;
+                return;
+            }
+            _inventoryController.CurrentSlot += 1;
+        }
+        if (Input.GetAxis("Mouse ScrollWheel") < 0)
+        {
+            if (_inventoryController.CurrentSlot == 0)
+            {
+                _inventoryController.CurrentSlot = 4;
+                return;
+            }
+            _inventoryController.CurrentSlot -= 1;
+        }
+    }
+    
+    private void HandleInputOnInteractables()
+    {
         if (Input.GetKeyDown(KeyCode.E) && _currentInteractable != null)
         {
             _currentInteractable.TriggerAnimation();
-            _currentInteractable.Toggle();
+            if (_currentInteractable is BaseProduct && _inventoryController.AddItemToInventory(_currentInteractable.GetGameObject()))
+            {
+                _currentInteractable.Toggle();
+                _currentInteractable = null;
+            }
+            else if (_currentInteractable is BaseEquipment)
+            {
+                _currentInteractable.Toggle();
+            }
         }
     }
 
@@ -171,11 +226,13 @@ public class CharacterControlManager : MonoBehaviour
         return currentInteractableItem;
     }
 
-    void UpdateInteractableDetection()
+    void UpdateCameraRaycastDetection()
     {
         RaycastHit hit;
-        if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward * (_capsuleCollider.radius * 5), out hit))
+        
+        if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out hit, (_capsuleCollider.radius * 5)))
         {
+            _hit = hit;
             // First check if it's an interactable layer/tag
             if (hit.collider.CompareTag("InteractableItem")) // Make sure to set this tag on interactable objects
             {
