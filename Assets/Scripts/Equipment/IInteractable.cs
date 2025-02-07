@@ -1,13 +1,7 @@
-﻿using UnityEngine;
+using UnityEngine;
 
-namespace Komorebi.Product
+public interface IInteractable
 {
-    public interface IInteractable
-    {
-        public bool IsPromptShown { get; set; }
-        public void Toggle();
-        public void TriggerAnimation();
-        public void ShowUI();
-        GameObject GetGameObject();
-    }
-}
+    Vector3 Position { get; }
+    void UpdateUIVisibility(bool visible);
+} 

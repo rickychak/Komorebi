@@ -65,9 +65,8 @@ GameObject:
   - component: {fileID: 8524874111390416502}
   - component: {fileID: 2504491267698251163}
   - component: {fileID: 7425634057947471500}
-  - component: {fileID: 7999113050876680838}
-  - component: {fileID: 4974127569100174521}
   - component: {fileID: 7259958844396547360}
+  - component: {fileID: 605773723783405445}
   m_Layer: 6
   m_Name: vender
   m_TagString: InteractableItem
@@ -146,39 +145,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &7999113050876680838
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7283860378890644767}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.75
-  m_Center: {x: 0, y: -20, z: 0}
---- !u!114 &4974127569100174521
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7283860378890644767}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f35b7a6a602c4ff8b9c53cee4e81c383, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!95 &7259958844396547360
 Animator:
   serializedVersion: 7
@@ -201,6 +167,19 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &605773723783405445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7283860378890644767}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bdef9594dbcc40eb9abdfd06feb8db26, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemUI: {fileID: 8988938226978933898}
 --- !u!1 &8770498453828230970
 GameObject:
   m_ObjectHideFlags: 0

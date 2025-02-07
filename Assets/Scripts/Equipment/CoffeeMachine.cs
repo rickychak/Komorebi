@@ -8,15 +8,11 @@ namespace Komorebi.Product
     {
         private void Awake()
         {
-            SpriteRenderer = GetComponentInChildren<SpriteRenderer>();
-            Animator = GetComponentInChildren<Animator>();
         }
 
         private void Start()
         {
-            Animator.SetBool(AnimIsClosed, IsClosed);
-            var equipmentCategory = DebugDisplayManager.Instance.CreateCategory("Equipment Status");
-            equipmentCategory.AddDebugValue(gameObject.name + ": ", () => IsToggled);
+            
         }
     }
 }

@@ -2,16 +2,11 @@ using System;
 using Komorebi.Product;
 using UnityEngine;
 
-public class BaseProduct : MonoBehaviour, IInteractable
+public class BaseProduct : InteractableItem
 {
     private SpriteRenderer _spriteRenderer;
 
     public float Progress { set; get; } = 0.0f; 
-
-    protected virtual void Awake()
-    {
-        _spriteRenderer = GetComponent<SpriteRenderer>();
-    }
 
     public void TriggerProgress(float interval, bool increase)
     {
@@ -23,11 +18,6 @@ public class BaseProduct : MonoBehaviour, IInteractable
         Progress -= interval;
     }
 
-    public GameObject GetGameObject()
-    {
-        return gameObject;
-    }
-    public bool IsPromptShown { get; set; }
     public bool IsPickedUp { get; set; }
 
     public void ShowUI()
@@ -35,7 +25,7 @@ public class BaseProduct : MonoBehaviour, IInteractable
         
     }
 
-    public virtual void Toggle()
+    public void Toggle()
     {
         IsPickedUp = true;
         gameObject.SetActive(false);

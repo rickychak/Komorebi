@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 6871344161166788709}
   - component: {fileID: 3509569292959160251}
   - component: {fileID: 7885849392401975766}
-  - component: {fileID: 4646935305833422314}
   - component: {fileID: 9195612230355343195}
   - component: {fileID: 1365888608423312872}
+  - component: {fileID: 5751004295204840422}
   m_Layer: 7
   m_Name: Donut
   m_TagString: InteractableItem
@@ -30,7 +30,7 @@ Transform:
   m_GameObject: {fileID: 4523911837535002101}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -9.5, y: 1.55, z: 1}
   m_LocalScale: {x: 0.5, y: 0.05, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -89,18 +89,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &4646935305833422314
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4523911837535002101}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 880b03a5fa434de4ad8ac87ab1118572, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!54 &9195612230355343195
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -150,3 +138,16 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &5751004295204840422
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4523911837535002101}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5940f9834d79417488d81700122fb1e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemUI: {fileID: 0}

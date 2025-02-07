@@ -6,13 +6,7 @@ namespace Product
 {
     public class Donut: BaseProduct
     {
-        private float _progress { get; set; } = 0f;
-        
-
-        protected override void Awake()
-        {
-            base.Awake();
-        }
+        private float _progress { get; set; }
 
         private void Start()
         {

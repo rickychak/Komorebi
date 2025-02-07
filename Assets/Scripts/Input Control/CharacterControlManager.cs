@@ -13,7 +13,7 @@ public class CharacterControlManager : MonoBehaviour
     private float _interactionCheckCooldown = 0.1f; // Adjust as needed
     private float _nextInteractionCheck;
     
-    private IInteractable _currentInteractable;
+    private InteractableItem _currentInteractable;
     private Camera _mainCamera;
     private Rigidbody _rigidbody;
     private DebugDisplayManager _debugDisplayManager;
@@ -105,22 +105,6 @@ public class CharacterControlManager : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.gameObject.CompareTag("InteractableItem"))
-        {
-            other.gameObject.GetComponent<IInteractable>().ShowUI();
-        }
-    }
-    
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.gameObject.CompareTag("InteractableItem"))
-        {
-            other.gameObject.GetComponent<IInteractable>().ShowUI();
-        }
-    }
-
     private void OnCollisionExit(Collision other)
     {
         if (other.gameObject.CompareTag("Ground"))
@@ -193,19 +177,19 @@ public class CharacterControlManager : MonoBehaviour
     
     private void HandleInputOnInteractables()
     {
-        if (Input.GetKeyDown(KeyCode.E) && _currentInteractable != null)
-        {
-            _currentInteractable.TriggerAnimation();
-            if (_currentInteractable is BaseProduct && _inventoryController.AddItemToInventory(_currentInteractable.GetGameObject()))
-            {
-                _currentInteractable.Toggle();
-                _currentInteractable = null;
-            }
-            else if (_currentInteractable is BaseEquipment)
-            {
-                _currentInteractable.Toggle();
-            }
-        }
+        // if (Input.GetKeyDown(KeyCode.E) && _currentInteractable != null)
+        // {
+        //     _currentInteractable.TriggerAnimation();
+        //     if (_currentInteractable is BaseProduct && _inventoryController.AddItemToInventory(_currentInteractable.GetGameObject()))
+        //     {
+        //         _currentInteractable.Toggle();
+        //         _currentInteractable = null;
+        //     }
+        //     else if (_currentInteractable is BaseEquipment)
+        //     {
+        //         _currentInteractable.Toggle();
+        //     }
+        // }
     }
 
     void FixedUpdate()
@@ -220,7 +204,7 @@ public class CharacterControlManager : MonoBehaviour
         string currentInteractableItem = "null";
         if (_currentInteractable != null)
         {
-            currentInteractableItem = _currentInteractable.GetGameObject().gameObject.name;
+            currentInteractableItem = _currentInteractable.GetGameObject().name;
         }
 
         return currentInteractableItem;
@@ -239,7 +223,9 @@ public class CharacterControlManager : MonoBehaviour
                 // Only get component if we don't already have it cached
                 if (_currentInteractable == null || hit.collider.gameObject != _currentInteractable.GetGameObject())
                 {
-                    _currentInteractable = hit.collider.gameObject.GetComponent<IInteractable>();
+                    _currentInteractable = hit.collider.gameObject.GetComponentInParent<InteractableItem>();
+                    
+                    Debug.Log("CUrrent Items: " + hit.collider.gameObject.name);
                 }
             }
             else
