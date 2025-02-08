@@ -9,6 +9,7 @@ public class InteractableLogic
 
     public InteractableLogic(GameObject uiElement)
     {
+        if (!uiElement) return;
         _spriteRenderer = uiElement.GetComponent<SpriteRenderer>();
     }
 

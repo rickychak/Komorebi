@@ -10,6 +10,7 @@ namespace Komorebi.Debug
         private Dictionary<string, DebugCategory> _debugCategories = new();
         private TextMeshProUGUI _textMesh;
         private CanvasGroup _canvasGroup;
+        private HashSet<string> _visibleCategories = new();
 
         // Singleton instance
         private static DebugDisplayManager _instance;
@@ -68,17 +69,37 @@ namespace Komorebi.Debug
             return category;
         }
 
+        public void ToggleCategory(string categoryName)
+        {
+            if (_visibleCategories.Contains(categoryName))
+            {
+                _visibleCategories.Remove(categoryName);
+            }
+            else
+            {
+                _visibleCategories.Add(categoryName);
+            }
+        }
+
+        public void HideAllCategories()
+        {
+            _visibleCategories.Clear();
+        }
+
         private string JoinDebugObjects()
         {
             StringBuilder builder = new StringBuilder();
             foreach (var category in _debugCategories.Values)
             {
-                builder.AppendLine($"=== {category.GetCategoryName()} ===");
-                foreach (var debugObject in category.GetDebugObjects())
+                if (_visibleCategories.Contains(category.GetCategoryName()))
                 {
-                    builder.AppendLine(debugObject.RetrieveDebugObject());
+                    builder.AppendLine($"=== {category.GetCategoryName()} ===");
+                    foreach (var debugObject in category.GetDebugObjects())
+                    {
+                        builder.AppendLine(debugObject.RetrieveDebugObject());
+                    }
+                    builder.AppendLine();
                 }
-                builder.AppendLine();
             }
             return builder.ToString();
         }

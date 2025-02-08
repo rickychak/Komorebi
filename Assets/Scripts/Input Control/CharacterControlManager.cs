@@ -32,6 +32,8 @@ public class CharacterControlManager : MonoBehaviour
     
     
     private bool IsGrounded { get; set; }
+    private CharacterDebugInfo _debugInfo;
+
     void Awake()
     {
         _mainCamera = Camera.main;
@@ -46,46 +48,25 @@ public class CharacterControlManager : MonoBehaviour
         if (_mainCamera == null){
             UnityEngine.Debug.LogError("Cannot find Main Camera");
         }
+
+        // Initialize debug info
+        _debugInfo = new CharacterDebugInfo(
+            _mainCamera,
+            _rigidbody,
+            () => IsGrounded,
+            () => _hit,
+            () => _overSpeed,
+            () => _overNegativeSpeed,
+            () => _overPositiveSpeed,
+            RetrieveCurrentInteractableItem,
+            () => _inventoryController.CurrentSlot
+        );
     }
 
     private void Start()
     {
-        RegisterDebugInfo();
         _rigidbody.linearDamping = 0f;
         _rigidbody.angularDamping = 0f;
-    }
-
-    private void RegisterDebugInfo()
-    {
-        var inputCategory = _debugDisplayManager.CreateCategory("Input");
-        inputCategory.AddDebugValue("IsGrounded", () => IsGrounded);
-        inputCategory.AddDebugValue("Mouse X", () => Input.GetAxisRaw("Horizontal"));
-        inputCategory.AddDebugValue("Mouse Y", () => Input.GetAxisRaw("Vertical"));
-        inputCategory.AddDebugValue("Interact Button - E", () => Input.GetKeyDown(KeyCode.E));
-        inputCategory.AddDebugValue("Interact Button - Numpad", () => _inventoryController.CurrentSlot);
-        
-        var movementCategory = _debugDisplayManager.CreateCategory("Movement");
-        movementCategory.AddDebugValue("Camera Right", () => _mainCamera.transform.right * Input.GetAxisRaw("Horizontal"));
-        movementCategory.AddDebugValue("Camera Forward", () => _mainCamera.transform.forward * Input.GetAxisRaw("Vertical"));
-        movementCategory.AddDebugValue("Raycast Hit", () => _hit.point);
-
-        var velocityCategory = _debugDisplayManager.CreateCategory("Velocity");
-        velocityCategory.AddDebugValue("Current", () => $"x: {_rigidbody.linearVelocity.x:F2} " +
-                                                       $"y: {_rigidbody.linearVelocity.y:F2} " +
-                                                       $"z: {_rigidbody.linearVelocity.z:F2}");
-        
-        var brakeCategory = _debugDisplayManager.CreateCategory("Brake Forces");
-        brakeCategory.AddDebugValue("Combined", () => FormatVector3(_overSpeed));
-        brakeCategory.AddDebugValue("Negative", () => FormatVector3(_overNegativeSpeed));
-        brakeCategory.AddDebugValue("Positive", () => FormatVector3(_overPositiveSpeed));
-        
-        var interactCategory = _debugDisplayManager.CreateCategory("Interact");
-        interactCategory.AddDebugValue("CurrentInteractItem", RetrieveCurrentInteractableItem);
-    }
-
-    private string FormatVector3(Vector3 vector)
-    {
-        return $"x: {vector.x:F2} y: {vector.y:F2} z: {vector.z:F2}";
     }
 
     private Vector2 GetUserInputOnMovement()
@@ -140,16 +121,13 @@ public class CharacterControlManager : MonoBehaviour
         HandleNumpadInput();
         HandleInputOnInteractables();
         
-        
         if (Input.GetKeyDown(KeyCode.Q) && _hit.collider.gameObject.layer == LayerMask.NameToLayer("Terrain"))
         {
-            // _currentInteractable.TriggerAnimation();
             var slotGameObject = _inventoryController.RemoveItemFromInventory();
             if (slotGameObject)
             {
                 slotGameObject.transform.position = _hit.point;
             }
-
         }
     }
 
