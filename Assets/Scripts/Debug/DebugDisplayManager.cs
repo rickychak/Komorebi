@@ -11,6 +11,7 @@ namespace Komorebi.Debug
         private TextMeshProUGUI _textMesh;
         private CanvasGroup _canvasGroup;
         private HashSet<string> _visibleCategories = new();
+        private Dictionary<string, HashSet<string>> _categoryGroups = new();
 
         // Singleton instance
         private static DebugDisplayManager _instance;
@@ -86,13 +87,46 @@ namespace Komorebi.Debug
             _visibleCategories.Clear();
         }
 
+        public void CreateCategoryGroup(string groupName, params string[] categories)
+        {
+            if (!_categoryGroups.ContainsKey(groupName))
+            {
+                _categoryGroups[groupName] = new HashSet<string>();
+            }
+            foreach (var category in categories)
+            {
+                _categoryGroups[groupName].Add(category);
+            }
+        }
+
         private string JoinDebugObjects()
         {
             StringBuilder builder = new StringBuilder();
-            foreach (var category in _debugCategories.Values)
+            
+            // If a visible category is a group, show all its subcategories
+            foreach (var visibleCategory in _visibleCategories)
             {
-                if (_visibleCategories.Contains(category.GetCategoryName()))
+                if (_categoryGroups.ContainsKey(visibleCategory))
                 {
+                    builder.AppendLine($"=== {visibleCategory} ===");
+                    foreach (var subcategory in _categoryGroups[visibleCategory])
+                    {
+                        if (_debugCategories.ContainsKey(subcategory))
+                        {
+                            var category = _debugCategories[subcategory];
+                            builder.AppendLine($"--- {category.GetCategoryName()} ---");
+                            foreach (var debugObject in category.GetDebugObjects())
+                            {
+                                builder.AppendLine(debugObject.RetrieveDebugObject());
+                            }
+                            builder.AppendLine();
+                        }
+                    }
+                }
+                // If it's a regular category, show it normally
+                else if (_debugCategories.ContainsKey(visibleCategory))
+                {
+                    var category = _debugCategories[visibleCategory];
                     builder.AppendLine($"=== {category.GetCategoryName()} ===");
                     foreach (var debugObject in category.GetDebugObjects())
                     {

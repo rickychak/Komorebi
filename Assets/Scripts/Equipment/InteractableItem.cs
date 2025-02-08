@@ -2,7 +2,7 @@ using DefaultNamespace;
 using UnityEngine;
 
 // MonoBehaviour wrapper that implements IInteractable
-public class InteractableItem : MonoBehaviour, IInteractable
+public abstract class InteractableItem : MonoBehaviour, IInteractable
 {
     [SerializeField] private GameObject itemUI;
     private InteractableLogic logic;
@@ -30,4 +30,8 @@ public class InteractableItem : MonoBehaviour, IInteractable
     {
         return gameObject;
     }
+
+    public abstract void Toggle();
+    
+    public abstract void TriggerAnimation();
 } 

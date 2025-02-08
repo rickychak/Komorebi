@@ -25,13 +25,13 @@ public class BaseProduct : InteractableItem
         
     }
 
-    public void Toggle()
+    public override void Toggle()
     {
         IsPickedUp = true;
         gameObject.SetActive(false);
     }
 
-    public void TriggerAnimation()
+    public override void TriggerAnimation()
     {
         
     }
