@@ -5,7 +5,7 @@ using Komorebi.Product;
 using Product;
 using UnityEngine;
 
-public class CharacterControlManager : MonoBehaviour, IDebuggable
+public class CharacterControlManager : MonoBehaviour
 {
     private const float _speed = 0.5f;
     private const float _maxSpeed = 10f;
@@ -32,7 +32,6 @@ public class CharacterControlManager : MonoBehaviour, IDebuggable
     
     private bool IsGrounded { get; set; }
     private CharacterDebugInfo _debugInfo;
-    private DebugRegistration _debugRegistration;
 
     void Awake()
     {
@@ -60,13 +59,6 @@ public class CharacterControlManager : MonoBehaviour, IDebuggable
             RetrieveCurrentInteractableItem,
             () => _inventoryController.CurrentSlot
         );
-
-        _debugRegistration = new DebugRegistration();
-        _debugRegistration.RegisterComponent(this, "Character.Movement");
-        _debugRegistration.RegisterComponent(this, "Character.Input");
-        _debugRegistration.RegisterComponent(this, "Character.Velocity");
-        _debugRegistration.RegisterComponent(this, "Character.BrakeForces");
-        _debugRegistration.RegisterComponent(this, "Character.Interact");
     }
 
     private void Start()
@@ -163,15 +155,13 @@ public class CharacterControlManager : MonoBehaviour, IDebuggable
     {
         if (Input.GetKeyDown(KeyCode.E) && _currentInteractable != null)
         {
-            _currentInteractable.TriggerAnimation();
-            if (_currentInteractable is BaseProduct && _inventoryController.AddItemToInventory(_currentInteractable.GetGameObject()))
+            if (_currentInteractable is IEquipmentInteraction equipment)
             {
-                _currentInteractable.Toggle();
-                _currentInteractable = null;
+                equipment.OnInteract();
             }
-            else if (_currentInteractable is BaseEquipment)
+            else
             {
-                _currentInteractable.Toggle();
+                _currentInteractable.TriggerAnimation();
             }
         }
     }
@@ -217,35 +207,5 @@ public class CharacterControlManager : MonoBehaviour, IDebuggable
         {
             _currentInteractable = null;
         }
-    }
-
-    public void RegisterDebugValues(DebugCategory category)
-    {
-        // Input debug values
-        category.AddDebugValue("IsGrounded", () => IsGrounded);
-        category.AddDebugValue("Mouse X", () => Input.GetAxisRaw("Horizontal"));
-        category.AddDebugValue("Mouse Y", () => Input.GetAxisRaw("Vertical"));
-        category.AddDebugValue("Interact Button - E", () => Input.GetKeyDown(KeyCode.E));
-        
-        // Movement debug values
-        category.AddDebugValue("Camera Right", () => _mainCamera.transform.right * Input.GetAxisRaw("Horizontal"));
-        category.AddDebugValue("Camera Forward", () => _mainCamera.transform.forward * Input.GetAxisRaw("Vertical"));
-        category.AddDebugValue("Raycast Hit", () => _hit.point);
-
-        // Velocity debug values
-        category.AddDebugValue("Current Velocity", () => FormatVector3(_rigidbody.linearVelocity));
-
-        // Brake forces debug values
-        category.AddDebugValue("Combined Forces", () => FormatVector3(_overSpeed));
-        category.AddDebugValue("Negative Forces", () => FormatVector3(_overNegativeSpeed));
-        category.AddDebugValue("Positive Forces", () => FormatVector3(_overPositiveSpeed));
-
-        // Interaction debug values
-        category.AddDebugValue("Current Interactable", RetrieveCurrentInteractableItem);
-    }
-
-    private string FormatVector3(Vector3 vector)
-    {
-        return $"x: {vector.x:F2} y: {vector.y:F2} z: {vector.z:F2}";
     }
 }

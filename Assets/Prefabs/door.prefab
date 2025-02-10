@@ -64,7 +64,7 @@ GameObject:
   - component: {fileID: 1038700045184818666}
   - component: {fileID: 8339356600771794997}
   - component: {fileID: 3685471314837689056}
-  - component: {fileID: 8731688628850644751}
+  - component: {fileID: 1809165938420193451}
   m_Layer: 6
   m_Name: door
   m_TagString: InteractableItem
@@ -133,7 +133,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &8731688628850644751
+--- !u!114 &1809165938420193451
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

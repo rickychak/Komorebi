@@ -41,6 +41,11 @@ namespace Komorebi.Debug
             }
             _instance = this;
             
+            // Clear all existing categories
+            _debugCategories.Clear();
+            _visibleCategories.Clear();
+            _categoryGroups.Clear();
+            
             // Initialize components
             _textMesh = GetComponentInChildren<TextMeshProUGUI>();
             _canvasGroup = GetComponentInChildren<CanvasGroup>();
@@ -60,11 +65,12 @@ namespace Komorebi.Debug
         
         public DebugCategory CreateCategory(string categoryName)
         {
-            
+            // If category exists, clear its debug values before returning
             if (_debugCategories.ContainsKey(categoryName))
             {
-                return _debugCategories[categoryName];
+                _debugCategories.Remove(categoryName);
             }
+            
             var category = new DebugCategory(categoryName);
             _debugCategories[categoryName] = category;
             return category;
@@ -111,7 +117,8 @@ namespace Komorebi.Debug
                     builder.AppendLine($"=== {visibleCategory} ===");
                     foreach (var subcategory in _categoryGroups[visibleCategory])
                     {
-                        if (_debugCategories.ContainsKey(subcategory))
+                        // Only show subcategory if it's also in visible categories
+                        if (_debugCategories.ContainsKey(subcategory) && _visibleCategories.Contains(subcategory))
                         {
                             var category = _debugCategories[subcategory];
                             builder.AppendLine($"--- {category.GetCategoryName()} ---");

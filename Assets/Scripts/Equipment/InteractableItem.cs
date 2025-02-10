@@ -21,7 +21,7 @@ public abstract class InteractableItem : MonoBehaviour, IInteractable
         InteractionManager.Instance.UnregisterItem(this);
     }
 
-    public void UpdateUIVisibility(bool visible)
+    public virtual void UpdateUIVisibility(bool visible)
     {
         logic.UpdateUIVisibility(visible);
     }
@@ -32,6 +32,6 @@ public abstract class InteractableItem : MonoBehaviour, IInteractable
     }
 
     public abstract void Toggle();
-    
     public abstract void TriggerAnimation();
+
 } 
